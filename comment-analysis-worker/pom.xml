@@ -5,10 +5,11 @@
     <parent>
         <artifactId>commentAnalysis</artifactId>
         <groupId>com.fan</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <version>1.0.0</version>
 
     <artifactId>comment-analysis-worker</artifactId>
 
@@ -18,34 +19,10 @@
             <artifactId>org.eclipse.jdt.core</artifactId>
             <version>3.20.0</version>
         </dependency>
-
-        <!--        <dependency>-->
-<!--            <groupId>org.eclipse.tycho</groupId>-->
-<!--            <artifactId>org.eclipse.jdt.core</artifactId>-->
-<!--            <version>3.8.0.v_C03</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.eclipse.jdt</groupId>-->
-<!--            <artifactId>org.eclipse.jdt.core</artifactId>-->
-<!--            <version>3.7.1</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.eclipse.core</groupId>-->
-<!--            <artifactId>org.eclipse.core.runtime</artifactId>-->
-<!--            <version>3.6.0.v20100505</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.eclipse.core</groupId>-->
-<!--            <artifactId>org.eclipse.core.resources</artifactId>-->
-<!--            <version>3.6.0.v20100526-0737</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
     </dependencies>
-
-
 </project>

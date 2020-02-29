@@ -24,15 +24,4 @@ public class CommentConvertAdapter {
         }
         return commentHolder;
     }
-
-//    public void setTag(CommentHolder commentHolder, String parentTag, int commentCardinal) {
-//        String tag;
-//        if ("0".equals(parentTag)) {
-//            tag = String.valueOf(commentCardinal);
-//        } else {
-//            tag = parentTag + "." + commentCardinal;
-//        }
-//        commentHolder.setTag(tag);
-//    }
-
 }

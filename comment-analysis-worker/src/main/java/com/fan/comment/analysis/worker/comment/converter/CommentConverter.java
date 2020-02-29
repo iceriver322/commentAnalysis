@@ -11,6 +11,8 @@ public interface CommentConverter {
     final String CLASSNAME="className";
     final String METHOD="method";
     final String ARGS="args";
+    final String DB="db";
+    final String OUTCALL="outcall";
 
     CommentHolder convert(Comment comment, CompilationUnit compilationUnit, String javaSource);
 

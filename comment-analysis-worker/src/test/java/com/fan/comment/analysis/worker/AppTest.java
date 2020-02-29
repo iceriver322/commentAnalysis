@@ -5,24 +5,25 @@ import com.fan.comment.analysis.worker.output.CommentPrinter;
 import com.fan.comment.analysis.worker.output.ConsoleMethodPrinter;
 import com.fan.comment.analysis.worker.service.CommentTraceService;
 import com.fan.comment.analysis.worker.util.SpringInitializer;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-public class AppStarter {
+public class AppTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppStarter.class);
+    private static final Logger logger = LoggerFactory.getLogger(AppTest.class);
 
-    public static void main(String[] args){
+    @Test
+    public void test01(){
         logger.info("Hello Analysis Starter");
         logger.info("user.dir:{}", System.getProperties().get("user.dir"));
 
-        String fileName = "comment-demo01/src/main/java/com/fan/comment/demo01/StarterService.java";
+        String fileName = "../comment-demo01/src/main/java/com/fan/comment/demo01/StarterService.java";
         String className = "StarterService";
-        String methodName = "getUser";
-//        String methodName = "getDate";
-        String methodArgs = " Long,   Date  ";
+        String methodName = "checkUser";
+        String methodArgs = " Long,   String  ";
 
         File file = new File(fileName);
         logger.trace("fileName:\n{}", fileName);
@@ -30,11 +31,10 @@ public class AppStarter {
         CommentTraceService commentTraceService = SpringInitializer.getBean(CommentTraceService.class);
         CommentPrinter commentPrinter = SpringInitializer.getBean(ConsoleMethodPrinter.class);
         MethodHolder methodHolder = commentTraceService.getCommentHolderList(file, className, methodName, methodArgs, "代码入口");
-        if(methodHolder!=null){
-            logger.info(methodHolder.toString());
-        }
+//        if(methodHolder!=null){
+//            logger.info(methodHolder.toString());
+//        }
         commentPrinter.print(methodHolder);
         logger.info("Exit Analysis Starter");
     }
-
 }

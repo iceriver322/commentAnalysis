@@ -1,10 +1,11 @@
 package com.fan.comment.demo01;
 
-import com.fan.comment.demo01.model.UserInfo;
+import com.fan.comment.demo01.dep.dao.UserInfoDao;
+import com.fan.comment.demo01.dep.model.UserInfo;
+import com.fan.comment.demo01.dep.outcall.PasswordCheck;
 
 import java.util.Date;
 /*
-    StarterService
     final String MESSAGE="message";
     final String PACKAGENAME="packageName";
     final String CLASSNAME="className";
@@ -13,39 +14,59 @@ import java.util.Date;
  */
 public class StarterService {
 
-    //hello
+    private UserInfoDao userInfoDao;
+    private PasswordCheck passwordCheck;
 
-    int i = 0;
-    public UserInfo getUser(Long userId, Date date){
+    public UserInfo checkUser(Long userId, String password){
         /* ==========
-          ^message: 开始 step1
+          ^message:  接收用户ID、密码，合法性检查
         ========== */
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUserId(userId);
-        userInfo.setUserName(getName(userId));
+        checkInput(userId, password);
+
+        /* ==========
+          ^message:  业务处理
+        ========== */
+
+        /* ==========
+          ^message: 获取用户信息
+          ^method:getUserInfo
+          ^args:Long
+          ^className:UserInfoDao
+          ^packageName:com.fan.comment.demo01.dep.dao
+        ========== */
+        UserInfo userInfo = userInfoDao.getUserInfo(userId);
+
+        /* ==========
+          ^message: 接收用户ID、密码
+          ^method:check
+          ^args:UserInfo, String
+          ^className:PasswordCheck
+          ^packageName:com.fan.comment.demo01.dep.outcall
+        ========== */
+        passwordCheck.check(userInfo, password);
+
         /* ==========
           ^message: 获取时间
           ^method:getDate
         ========== */
         userInfo.setDate(getDate());
         /* ==========
-          ^message: 返回用户信息 step3
+          ^message: 返回用户信息
         ========== */
         return userInfo;
     }
 
     private Date getDate(){
-        /* ==========
-          ^message: 设置id
-        ========== */
-        long i= 0l;
+//        /* ==========
+//          ^message: 设置id
+//        ========== */
+//        long i= 0l;
 
         /* ==========
-          ^message: 获取用户信息
-          ^method:getName
+          ^message: 获取时区函数，转化普通注释
+          ^method:getLocal
           ^args:Long
         ========== */
-        getName(i);
 
         /* ==========
           ^message: 返回时间
@@ -53,12 +74,8 @@ public class StarterService {
         return new Date();
     }
 
-    //getName
-    private String getName(Long userId){
-        /* ==========
-          ^message: 获取用户名
-        ========== */
-        return "fan-"+userId;
+
+    public void checkInput(Long userId, String passwd){
 
     }
 }

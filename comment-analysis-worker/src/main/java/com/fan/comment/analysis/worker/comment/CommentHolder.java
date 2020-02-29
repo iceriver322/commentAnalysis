@@ -15,6 +15,8 @@ public class CommentHolder {
     private int cardinal;
     private CommentType commentType;
     private String message;
+    private String db;
+    private String outCall;
     private String rawMessage;
     private List<MethodHolder> methodHolderList;
 

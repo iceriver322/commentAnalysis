@@ -1,4 +1,4 @@
-package com.fan.comment.demo01.model;
+package com.fan.comment.demo01.dep.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,5 +12,6 @@ import java.util.Date;
 public class UserInfo {
     private Long userId;
     private String userName;
+    private String password;
     private Date date;
 }

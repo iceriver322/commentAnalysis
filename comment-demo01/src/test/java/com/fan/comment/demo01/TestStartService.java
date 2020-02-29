@@ -1,6 +1,6 @@
 package com.fan.comment.demo01;
 
-import com.fan.comment.demo01.model.UserInfo;
+import com.fan.comment.demo01.dep.model.UserInfo;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

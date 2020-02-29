@@ -5,9 +5,10 @@ import com.fan.comment.analysis.worker.comment.CommentType;
 import com.fan.comment.analysis.worker.comment.MethodCommenHolder;
 import com.fan.comment.analysis.worker.method.MethodHolder;
 import com.fan.comment.analysis.worker.comment.converter.CommentConvertAdapter;
-import com.fan.comment.analysis.worker.search.FileLocater;
+import com.fan.comment.analysis.worker.search.FileLocator;
 import com.fan.comment.analysis.worker.search.FileWrapper;
 import com.fan.comment.analysis.worker.util.ASTCheckUtil;
+import com.fan.comment.analysis.worker.util.CycleDetectionUtil;
 import com.fan.comment.analysis.worker.util.FileParser;
 import org.eclipse.jdt.core.dom.*;
 import org.slf4j.Logger;
@@ -32,19 +33,36 @@ public class CommentTraceService {
     private FileParser fileParser;
 
     @Resource
-    FileLocater fileLocater;
+    private FileLocator fileLocator;
 
     @Resource
-    ASTCheckUtil astCheckUtil;
+    private ASTCheckUtil astCheckUtil;
+
+    @Resource
+    private CycleDetectionUtil cycleDetectionUtil;
 
     @Resource
     private CommentConvertAdapter commentConvertAdapter;
 
     public MethodHolder getCommentHolderList(File file,String className, String methodName, String args, String message){
 
+        if(file == null || className == null || methodName == null){
+            return null;
+        }
+
         MethodHolder methodHolder = null;
         String javaSource = null;
         CompilationUnit compilationUnit = null;
+
+        if(args!=null){
+            args = args.replaceAll("\\s", "");
+        }
+        String[] argsArr = astCheckUtil.getArgArr(args);
+
+        String cycleDetectionKey = file.toString()+"_"+className+"_"+methodName+"_"+args;
+        if(cycleDetectionUtil.isCycle(cycleDetectionKey)){
+            return newMethodHolder(null, className, methodName, argsArr, "循环节点，参见之上流程");
+        }
 
         FileWrapper fileWrapper = compilationUnitMap.get(file);
         if(fileWrapper == null){
@@ -60,15 +78,14 @@ public class CommentTraceService {
             javaSource = fileWrapper.getJavaSource();
             compilationUnit = fileWrapper.getCompilationUnit();
         }
-        String[] argsArr = astCheckUtil.getArgArr(args);
 
         for(TypeDeclaration type : (List<TypeDeclaration>)compilationUnit.types()){
             if(className.equals(type.getName().getIdentifier())){
-                logger.debug("class found:{}", className);
+                logger.trace("class found:{}", className);
                 int commentCardinal = 1;
                 for(MethodDeclaration methodDeclaration : type.getMethods()){
                     if(methodName.equals(methodDeclaration.getName().getIdentifier()) && astCheckUtil.argsCheck(argsArr, methodDeclaration.parameters())){
-                        logger.debug("method found:{}", methodName);
+                        logger.trace("method found:{}", methodName);
                         int methodStart = methodDeclaration.getStartPosition();
                         int methodEnd = methodStart + methodDeclaration.getLength();
                         List<Comment> commentList = compilationUnit.getCommentList();
@@ -86,11 +103,14 @@ public class CommentTraceService {
                                         String methodClassName = methodCommenHolder.getClassName() ;
                                         String methodMethodName = methodCommenHolder.getMethodName();
                                         String methodArgs = methodCommenHolder.getArgs();
-                                        File methodFile = fileLocater.locateClassFile(methodPackageName, methodClassName, methodMethodName, methodArgs, compilationUnit, className, file);
+                                        String methodMessage = methodCommenHolder.getMessage();
+                                        File methodFile = fileLocator.locateClassFile(methodPackageName, methodClassName, methodMethodName, methodArgs, compilationUnit, className, file);
                                         if(methodClassName == null){
                                             methodClassName = className;
+                                            methodCommenHolder.setClassName(className);
+                                            logger.trace("change local className:{}", methodClassName);
                                         }
-                                        MethodHolder childMethodHolder = getCommentHolderList(methodFile, methodClassName, methodMethodName, methodArgs, methodCommenHolder.getMessage());
+                                        MethodHolder childMethodHolder = getCommentHolderList(methodFile, methodClassName, methodMethodName, methodArgs, methodMessage);
                                         if(childMethodHolder != null){
                                             if(lastCommentHolder == null){
                                                 lastCommentHolder = new CommentHolder();
@@ -103,7 +123,14 @@ public class CommentTraceService {
                                             List methodHolderList = lastCommentHolder.getMethodHolderList();
                                             methodHolderList.add(childMethodHolder);
                                         }else{
-                                            logger.warn("未找到methodCommenHolder对应的解析:{}", methodCommenHolder);
+                                            logger.warn("未找到methodCommenHolder对应的解析:{}, file:{}，转换为普通日志", methodCommenHolder, methodFile);
+                                            if(methodMessage != null){
+                                                methodCommenHolder.setCommentType(CommentType.TEXT);
+                                                methodCommenHolder.setCardinal(commentCardinal++);
+                                                List<CommentHolder> commentHolderList = methodHolder.getCommentHolderList();
+                                                commentHolderList.add(methodCommenHolder);
+                                                lastCommentHolder = methodCommenHolder;
+                                            }
                                         }
                                     }else{
                                         commentHolder.setCardinal(commentCardinal++);
@@ -111,9 +138,7 @@ public class CommentTraceService {
                                         commentHolderList.add(commentHolder);
                                         lastCommentHolder = commentHolder;
                                     }
-
                                 }
-
                             }
                         }
                         break;
@@ -134,35 +159,4 @@ public class CommentTraceService {
         methodHolder.setMessage(message);
         return methodHolder;
     }
-
-    private String[] getArgArr(String args){
-        String[] argsArr = null;
-        if(args!=null){
-            argsArr = args.split(",");
-            for(int i=0; i<argsArr.length; i++){
-                argsArr[i] = argsArr[i].trim();
-            }
-        }
-        return argsArr;
-    }
-
-    private boolean argsCheck(String[] argsArr, List<SingleVariableDeclaration> paraList){
-        int argsLength = 0;
-        if(argsArr!=null){
-            argsLength = argsArr.length;
-        }
-        if(argsLength != paraList.size()){
-            return false;
-        }
-        for(int i=0; i<paraList.size(); i++){
-            String paraType = paraList.get(i).getType().toString();
-            String inputType = argsArr[i];
-            logger.trace("para check:{}, {}", argsArr[i], paraType);
-            if(!paraType.equals(inputType)){
-                return false;
-            }
-        }
-        return true;
-    }
-
 }

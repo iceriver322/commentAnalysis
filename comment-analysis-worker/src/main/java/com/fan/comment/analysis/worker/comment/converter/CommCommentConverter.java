@@ -38,28 +38,34 @@ public class CommCommentConverter implements CommentConverter {
         for(String str : commentBodyArr){
             String[] strArr = str.split(":");
             if(strArr.length==2){
-                if(MESSAGE.equals(strArr[0].trim())){
-                    commentHolder.setMessage(strArr[1].trim());
-                }else if(METHOD.equals(strArr[0].trim())){
+                String key = strArr[0].trim();
+                String value = strArr[1].trim();
+                if(MESSAGE.equals(key)){
+                    commentHolder.setMessage(value);
+                }else if(DB.equals(key)){
+                    commentHolder.setDb(value);
+                }else if(OUTCALL.equals(key)){
+                    commentHolder.setOutCall(value);
+                } else if(METHOD.equals(key)){
                     if(methodCommenHolder == null){
                         methodCommenHolder = new MethodCommenHolder();
                     }
-                    methodCommenHolder.setMethodName(strArr[1].trim());
-                }else if(PACKAGENAME.equals(strArr[0].trim())){
+                    methodCommenHolder.setMethodName(value);
+                }else if(PACKAGENAME.equals(key)){
                     if(methodCommenHolder == null){
                         methodCommenHolder = new MethodCommenHolder();
                     }
-                    methodCommenHolder.setPackageName(strArr[1].trim());
-                }else if(CLASSNAME.equals(strArr[0].trim())){
+                    methodCommenHolder.setPackageName(value);
+                }else if(CLASSNAME.equals(key)){
                     if(methodCommenHolder == null){
                         methodCommenHolder = new MethodCommenHolder();
                     }
-                    methodCommenHolder.setClassName(strArr[1].trim());
-                }else if(ARGS.equals(strArr[0].trim())){
+                    methodCommenHolder.setClassName(value);
+                }else if(ARGS.equals(key)){
                     if(methodCommenHolder == null){
                         methodCommenHolder = new MethodCommenHolder();
                     }
-                    methodCommenHolder.setArgs(strArr[1].trim());
+                    methodCommenHolder.setArgs(value);
                 }
 
             }

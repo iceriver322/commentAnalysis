@@ -2,6 +2,9 @@ package com.fan.comment.analysis.worker.output;
 
 import com.fan.comment.analysis.worker.comment.CommentHolder;
 import com.fan.comment.analysis.worker.method.MethodHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,9 +12,13 @@ import java.util.List;
 @Component
 public class ConsoleMethodPrinter implements CommentPrinter{
 
+    private static final Logger logger = LoggerFactory.getLogger(ConsoleMethodPrinter.class);
     private static final String step = "|     ";
     private static final String innerCommentstep = "+- ";
     private static final String lastCommentstep  = "\\- ";
+
+    @Value("${firstLaneWidth:100}")
+    private  int firstLaneWidth;
 
     @Override
     public void print(MethodHolder methodHolder) {
@@ -47,13 +54,24 @@ public class ConsoleMethodPrinter implements CommentPrinter{
                 }
                 CommentHolder commentHolder = commentHolderList.get(i);
                 String message = commentHolder.getMessage();
+                String db = commentHolder.getDb();
+                String outCall = commentHolder.getOutCall();
                 int cardinal = commentHolder.getCardinal();
                 List<MethodHolder> methodHolderList = commentHolder.getMethodHolderList();
-                stringBuilder.append(initStep)
+
+                StringBuilder lineSb = new StringBuilder();
+                lineSb.append(initStep)
                         .append(commentstep)
                         .append(getCardinalFlag(cardinal))
-                        .append(message)
-                        .append("\n");
+                        .append(message);
+
+                if(outCall != null){
+                    addInfo(lineSb, outCall);
+                }else if(db != null){
+                    addInfo(lineSb, db);
+                }
+                lineSb.append("\n");
+                stringBuilder.append(lineSb);
                 if(methodHolderList!=null && methodHolderList.size()>0){
                     for(MethodHolder tmpMethod : methodHolderList){
                         getOutPut(tmpMethod, stringBuilder, initStep+step);
@@ -61,6 +79,21 @@ public class ConsoleMethodPrinter implements CommentPrinter{
                 }
             }
         }
+        return stringBuilder;
+    }
+
+    private StringBuilder addInfo(StringBuilder stringBuilder, String info){
+        int length = stringBuilder.length();
+        if(length < firstLaneWidth){
+            for(int i=length; i< firstLaneWidth; i++){
+                stringBuilder.append("-");
+            }
+        }else{
+            stringBuilder.append("-----");
+        }
+        logger.trace("stringBuilder length {}", stringBuilder.length());
+        info = info.replaceAll("\\s", "");
+        stringBuilder.append("|--->").append(info);
         return stringBuilder;
     }
 }
