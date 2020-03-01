@@ -3,7 +3,7 @@ package com.fan.comment.analysis.worker.output;
 import com.fan.comment.analysis.worker.method.MethodHolder;
 
 public interface CommentPrinter {
-    void print(MethodHolder methodHolder);
+    StringBuilder print(MethodHolder methodHolder);
 
     default String getArgs(String[] methodArgs){
         StringBuilder stringBuilder = new StringBuilder();

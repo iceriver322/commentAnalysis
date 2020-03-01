@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class ConsoleMethodPrinter implements CommentPrinter{
+public class ConsoleCommentPrinter implements CommentPrinter{
 
-    private static final Logger logger = LoggerFactory.getLogger(ConsoleMethodPrinter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsoleCommentPrinter.class);
     private static final String step = "|     ";
     private static final String innerCommentstep = "+- ";
     private static final String lastCommentstep  = "\\- ";
@@ -21,10 +21,11 @@ public class ConsoleMethodPrinter implements CommentPrinter{
     private  int firstLaneWidth;
 
     @Override
-    public void print(MethodHolder methodHolder) {
+    public StringBuilder print(MethodHolder methodHolder) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder = getOutPut(methodHolder, stringBuilder, "");
-        System.out.println(stringBuilder.toString());
+        logger.info("result:\n{}", stringBuilder.toString());
+        return stringBuilder;
     }
 
     private StringBuilder getOutPut(MethodHolder methodHolder, StringBuilder stringBuilder, String initStep){

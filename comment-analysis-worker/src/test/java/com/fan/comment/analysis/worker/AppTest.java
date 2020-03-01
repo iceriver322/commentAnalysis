@@ -2,7 +2,7 @@ package com.fan.comment.analysis.worker;
 
 import com.fan.comment.analysis.worker.method.MethodHolder;
 import com.fan.comment.analysis.worker.output.CommentPrinter;
-import com.fan.comment.analysis.worker.output.ConsoleMethodPrinter;
+import com.fan.comment.analysis.worker.output.ConsoleCommentPrinter;
 import com.fan.comment.analysis.worker.service.CommentTraceService;
 import com.fan.comment.analysis.worker.util.SpringInitializer;
 import org.junit.Test;
@@ -22,14 +22,17 @@ public class AppTest {
 
         String fileName = "../comment-demo01/src/main/java/com/fan/comment/demo01/StarterService.java";
         String className = "StarterService";
-        String methodName = "checkUser";
-        String methodArgs = " Long,   String  ";
+//        String methodName = "checkUser";
+//        String methodArgs = " Long,   String  ";
+
+        String methodName = "getDate";
+        String methodArgs = "";
 
         File file = new File(fileName);
         logger.trace("fileName:\n{}", fileName);
 
         CommentTraceService commentTraceService = SpringInitializer.getBean(CommentTraceService.class);
-        CommentPrinter commentPrinter = SpringInitializer.getBean(ConsoleMethodPrinter.class);
+        CommentPrinter commentPrinter = SpringInitializer.getBean("swingCommentPrinter", ConsoleCommentPrinter.class);
         MethodHolder methodHolder = commentTraceService.getCommentHolderList(file, className, methodName, methodArgs, "代码入口");
 //        if(methodHolder!=null){
 //            logger.info(methodHolder.toString());

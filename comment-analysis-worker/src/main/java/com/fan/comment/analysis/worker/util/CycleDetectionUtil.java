@@ -21,4 +21,8 @@ public class CycleDetectionUtil {
         return !notExist;
     }
 
+    public void initStack(){
+        threadLocal.set(null);
+    }
+
 }

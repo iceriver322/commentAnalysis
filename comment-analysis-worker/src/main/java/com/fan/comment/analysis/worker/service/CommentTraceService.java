@@ -51,11 +51,14 @@ public class CommentTraceService {
         }
 
         MethodHolder methodHolder = null;
-        String javaSource = null;
-        CompilationUnit compilationUnit = null;
+        String javaSource;
+        CompilationUnit compilationUnit;
 
         if(args!=null){
             args = args.replaceAll("\\s", "");
+            if(args.equals("")){
+                args = null;
+            }
         }
         String[] argsArr = astCheckUtil.getArgArr(args);
 
@@ -120,7 +123,7 @@ public class CommentTraceService {
                                                 List<CommentHolder> commentHolderList = methodHolder.getCommentHolderList();
                                                 commentHolderList.add(lastCommentHolder);
                                             }
-                                            List methodHolderList = lastCommentHolder.getMethodHolderList();
+                                            List<MethodHolder> methodHolderList = lastCommentHolder.getMethodHolderList();
                                             methodHolderList.add(childMethodHolder);
                                         }else{
                                             logger.warn("未找到methodCommenHolder对应的解析:{}, file:{}，转换为普通日志", methodCommenHolder, methodFile);
